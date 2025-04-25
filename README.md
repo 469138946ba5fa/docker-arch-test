@@ -487,7 +487,7 @@ annotation-index.org.opencontainers.image.version='1.0.0',\
 annotation-index.org.opencontainers.image.authors='469138946ba5fa <af5ab649831964@gmail.com>',\
 annotation-index.org.opencontainers.image.source='https://github.com/469138946ba5fa/docker-arch-test',\
 annotation-index.org.opencontainers.image.licenses='MIT' \
-  --provenance=false
+  --provenance=false \
   --push .
 #unset BUILDX_NO_DEFAULT_ATTESTATIONS
 
@@ -507,15 +507,13 @@ rm -frv ${BUILDX_CACHE}
 mv -fv ${BUILDX_CACHE}-new ${BUILDX_CACHE}
 mkdir -pv  ${BUILDX_CACHE}-new
 
-# docker build clean
-## 清理所有停止的容器
-#docker container prune
-## 清理未使用的卷
-#docker volume prune
 ## 清理 buildx 构建缓存。以及清理构建新镜像所产生的 <none> 标签老镜像
 docker builder prune -af
 docker rmi $(docker images -qaf dangling=true)
 
+# docker build clean
+## 清理所有停止的容器
+#docker container prune -f
 ## 清理未使用的镜像
 #docker image prune -af
 ## 清理不使用的网络
@@ -529,8 +527,8 @@ docker rmi $(docker images -qaf dangling=true)
 ## 清理 buildx 不使用的节点，你也可以留着
 docker-buildx use default
 docker-buildx ls
-#docker-buildx rm -f --all-inactive
 #docker-buildx rm -f $(docker-buildx ls --format '{{.Builder.Name}}')
+#docker-buildx rm -f --all-inactive
 docker-buildx stop ${REPO}
 docker-buildx rm -f ${REPO}
 docker-buildx ls
